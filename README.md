@@ -1,41 +1,47 @@
-## ML-Model-Flask-Deployment
-This is a demo project to elaborate how Machine Learn Models are deployed on production using Flask API
+Judul TA : Modeling Healthcare Indicators Using Classification and Regression Trees
+Kelompok : TA-2020/2021-3
+Nama	 : Januard Lumbangaol
+NIM	 : 11S17064
 
-### Prerequisites
-You must have Scikit Learn, Pandas (for Machine Leraning Model) and Flask (for API) installed.
 
-### Project Structure
-This project has four major parts :
-1. model.py - This contains code fot our Machine Learning model to predict employee salaries absed on trainign data in 'hiring.csv' file.
-2. app.py - This contains Flask APIs that receives employee details through GUI or API calls, computes the precited value based on our model and returns it.
-3. request.py - This uses requests module to call APIs already defined in app.py and dispalys the returned value.
-4. templates - This folder contains the HTML template to allow user to enter employee detail and displays the predicted employee salary.
+##Prototipe
+Folder ini berisi project prototipe yang digunakan untuk menjalankan model prediksi lama tinggal dan menghitung total biaya
+berdasarkan data prediksi lama hari dengan memanfaatkan microframeworok flask
 
-### Running the project
-1. Ensure that you are in the project home directory. Create the machine learning model by running below command -
+
+## Struktur Project
+Project ini terdiri dari empat struktur besar
+1. model.py - berisi kode program untuk model prediksi lama tinggal pasien.
+2. app.py - berisi Flask API yang menerima detail data melalui panggilan GUI atau API, menghitung nilai yang diprediksi berdasarkan model dan menampilkannya.
+	    serta tampilan prototipe yang digunakan untuk menghitung total biaya.
+3. request.py - modul permintaan untuk memanggil API yang sudah ditentukan di app.py dan menampilkan nilai didapat.
+4. templates - berisi template HTML untuk memungkinkan pengguna memasukkan data pasien dan menampilkan prediksi lama tinggal dan total biaya.
+
+## Data
+1. Data rekam medis pada file "AnalysisdatasetPemeriksaanFisikPasien.csv" untuk prediksi lama tinggal pasien.
+2. Database "datarumahsakit.sql" berisi data biaya obat sesuai diagnosis dan biaya sesuai rungan pada Rumah Sakit XYZ untuk menghitung estimasi total biaya.
+
+## Menjalankan Project
+1. Memastikan berada pada home directory project dan menjalankan model prediksi lama tinggal dengan perintah :
 ```
 python model.py
 ```
-This would create a serialized version of our model into a file model.pkl
+Hal tersebut akan membuat versi serial dari model  menjadi file model.pkl
 
-2. Run app.py using below command to start Flask API
+
+2. Menjalankan Flask API
 ```
 python app.py
 ```
-By default, flask will run on port 5000.
+flask akan berjalan pada port 5000 secara default.
 
-3. Navigate to URL http://localhost:5000
+3. Buka URL http://localhost:5000
 
-You should be able to view the homepage as below :
-![alt text](http://www.thepythonblog.com/wp-content/uploads/2019/02/Homepage.png)
 
-Enter valid numerical values in all 3 input boxes and hit Predict.
-
-If everything goes well, you should  be able to see the predcited salary vaule on the HTML page!
-![alt text](http://www.thepythonblog.com/wp-content/uploads/2019/02/Result.png)
-
-4. You can also send direct POST requests to FLask API using Python's inbuilt request module
-Run the beow command to send the request with some pre-popuated values -
-```
-python request.py
-```
+## Langkah Menggunakan Prototipe
+1. Memasukkan data pemeriksaan fisik pasien pada form data pasien.
+2. Menekan tombol Prediksi untuk mendapatkan prediksi lama tinggal berdasarkan data yang sudah didapat.
+3. Prediksi lama tinggal akan tampil pada side sebelah kanan.
+4. Masukkan diagnosis pasien untuk mengetahui biaya obat.
+5. Pilih ruangan rawat inap yang diinginkan.
+6. Tekan tombol Hitung untuk mendapatkan estimasi total biaya berdasarkan lama tinggal, biaya obat, dan ruangan rawat inap.

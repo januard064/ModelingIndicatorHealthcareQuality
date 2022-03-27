@@ -4,36 +4,66 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pickle
 
-dataset = pd.read_csv('hiring.csv')
+df = pd.read_csv('AnalysisdatasetPemeriksaanFisikPasien.csv')
 
-dataset['experience'].fillna(0, inplace=True)
+df = df.drop(['No','No. RM'], axis=1)
 
-dataset['test_score'].fillna(dataset['test_score'].mean(), inplace=True)
+Kelompok_usia_string_index = {'28-<1 th': 1, '1-4 th': 2, '5-14 th': 3, '15-24 th': 4, '25-44 th': 5, '45-64 th': 6, '65> th': 7}
 
-X = dataset.iloc[:, :3]
+df['Kelompok Usia'] = df['Kelompok Usia'].apply(lambda x: Kelompok_usia_string_index[x])
 
-#Converting words to integer values
-def convert_to_int(word):
-    word_dict = {'one':1, 'two':2, 'three':3, 'four':4, 'five':5, 'six':6, 'seven':7, 'eight':8,
-                'nine':9, 'ten':10, 'eleven':11, 'twelve':12, 'zero':0, 0: 0}
-    return word_dict[word]
+categ_vars = ['Diagnosis','Gender']
 
-X['experience'] = X['experience'].apply(lambda x : convert_to_int(x))
+for var in categ_vars:
+    categ_list = pd.get_dummies(df[var], prefix=var) # implementing One Hot Encoder
+    df_temp = df.join(categ_list)
+    df = df_temp
 
-y = dataset.iloc[:, -1]
+data_vars = df.columns.values.tolist()
+type(data_vars)
+
+to_keep = [i for i in data_vars if i not in categ_vars]
+
+encoded_df = df[to_keep]
+
+
+
+encoded_df['LoS'] = encoded_df['LoS'].replace([1,2,3],'Dibawah Empat Hari')
+
+
+encoded_df['LoS'] = encoded_df['LoS'].replace([4,5,6,7,9,10,11],'Empat Hari Lebih')
+
+
+
+
+
 
 #Splitting Training and Test Set
-#Since we have a very small dataset, we will train our model with all availabe data.
+from sklearn.model_selection import train_test_split
 
-from sklearn.linear_model import LinearRegression
-regressor = LinearRegression()
+X = encoded_df.drop(['LoS'], axis=1) #remove data leakage features
+y = encoded_df[['LoS']]
+y=y.astype('str')
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
-#Fitting model with trainig data
-regressor.fit(X, y)
+
+#decision tree optimal parameters
+#best model 90:10
+#decision tree optimal parameters
+from sklearn.tree import DecisionTreeClassifier
+dtree_best=DecisionTreeClassifier(max_depth= 4, class_weight='balanced')
+dtree_best.fit(X_train,y_train)
+
+from sklearn import metrics
+train_predictions_md3 = dtree_best.predict(X_train)
+test_predictions_md3 = dtree_best.predict(X_test)
+
+
+
 
 # Saving model to disk
-pickle.dump(regressor, open('model.pkl','wb'))
+pickle.dump(dtree_best, open('model.pkl','wb'))
 
 # Loading model to compare the results
 model = pickle.load(open('model.pkl','rb'))
-print(model.predict([[2, 9, 6]]))
+print(model.predict([[3,90,100,20,38.2,4,0,1,0,1]]))

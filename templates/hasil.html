@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html >
+<!--From https://codepen.io/frytyler/pen/EGdtg-->
+<head>
+  <meta charset="UTF-8">
+  <title>Prototype</title>
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style2.css') }}"> -->
+<style>
+  body{
+   background-image: url("static/css/background3.jpg");
+    background-repeat: no-repeat;
+   background-size:cover
+  }
+  .data{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5%;
+  margin-right: 5%;
+  
+  }
+
+  /* table,th,td{
+    border: 1px solid black;
+  } */
+
+  .content{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  }
+  .content2{
+  margin-left: 20%;
+  }
+
+  * {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column1 {
+  float: left;
+  width: 40%;
+  padding: 10px;
+  /* border: solid black; */
+}
+
+.column2 {
+  float: left;
+  width:60%;
+  padding: 10px;
+  /* border: solid black; */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+</head>
+
+<body>
+<div class="row"> 
+  <h2 class="data">Halaman Hasil</h2>
+ <div class="column1" >
+	<h3 class="content" style="margin-left: 40%;">DATA PASIEN</h3>
+<div class="content"style="margin-left: 40%;">
+     <!-- Main Input For Receiving Query to our ML -->
+    <form action="{{ url_for('predict')}}"method="post" >
+        <table >
+          <tr>
+          <td><label for="kelompok_usia">Kelompok Usia</label> </td>
+          <td><input type="text" name="kelompok_usia" placeholder="" required="required" /></td>
+          </tr>
+         
+          <tr>
+          <td><label for="tekanan_darah">Tekanan Darah</label></td>
+          <td><input type="text" name="tekanan_darah" placeholder="" required="required" /></td>
+          </tr>
+          <tr>
+          <td><label for="nadi">Nadi </label></td>
+          <td><input type="text" name="nadi" placeholder="" required="required" /></td>
+          </tr>
+          <tr>
+          <td><label for="pernafasan">Pernafasan</label></td>
+          <td><input type="text" name="pernafasan" placeholder="" required="required" /></td>
+          </tr>
+          <tr>
+          <td><label for="suhu">Suhu</label></td>
+          <td><input type="text" name="suhu" placeholder="" required="required" /></td>
+          </tr>
+          <tr>
+          <td><label for="status_nyeri">Status Nyeri</label></td>
+          <td><input type="text" name="status_nyeri" placeholder="" required="required" /></td>
+          </tr>
+          <tr>
+          <td><label>Diagnosis</label>
+          <td>
+          <label>DHF</label>
+          <!-- <input type="text" name="Diagnosis_DHF" placeholder="DHF" required="required" /> -->
+          <select name="Diagnosis_DHF" id="">
+            <option value="0">0</option>
+            <option value="1">1</option>
+          </select>
+          <!-- <input type="text" name="Diagnosis_Typoid" placeholder="Typoid" required="required" /></td> -->
+          <label>Typoid</label>
+          <select name="Diagnosis_Typoid" id="" style="margin-left: 20px;">
+            <option value="0">0</option>
+            <option value="1">1</option>
+          </select>
+          </tr>
+          <tr>
+            <td><label>Gender</label></td>
+            <td>
+            <label>Pria</label>
+            <!-- <input type="text" name="Gender_L" placeholder="Laki-Laki" required="required" /> -->
+            <select name="Gender_L" >
+              <option value="0">0</option>
+              <option value="1">1</option>
+            </select>
+            <label>Perempuan</label>
+            <!-- <input type="text" name="Gender_P" placeholder="Perempuan" required="required" /></td> -->
+            <select name="Gender_P">
+              <option value="0">0</option>
+              <option value="1">1</option>
+            </select>
+          </tr>
+          
+        
+        </table>
+        
+        <button style="margin-left: 70%; margin-top: 5%;" type="submit" class="btn btn-primary btn-block btn-large">Predict</button>
+        
+      </form>
+  </div>
+   <br>
+   <br>
+  </div>
+
+  <div class="column2">
+  <h3 class="content">HASIL PREDIKSI</h3>
+  <div class="content2">
+  <form action="" name="biaya">
+   <p>Lama Tinggal : {{ prediction_text }}</p>
+    
+   <h4>Estimasi Biaya</h4>
+
+  <table > 
+  <tr>
+  <td>Total Biaya</td> <td>:</td>
+  <td> 
+      <SELECT name="hargaobat" id="hargaobat" style="width: 100%; height: 20px;">
+      {% for ho in obat %}
+      <OPTION value="" disabled selected hidden>Diagnosis</OPTION>
+      <OPTION id="hargaobat" name="hargaobat" value={{ho[1]}}>{{ho[0]}}</OPTION>
+      {% endfor %}
+      </SELECT>
+      
+  </td>
+  <td>+</td>
+  <td>
+    <p>
+    
+    <SELECT name="hargaKelas" id="hargaKelas" style="width: 30%; height: 20px;">
+    {% for rs in data %}
+    <OPTION value="" disabled selected hidden>Pilih Ruangan</OPTION>
+    <OPTION id="hargaKelas" name="hargaKelas" value={{rs[2]}}>{{rs[1]}}</OPTION>
+    {% endfor %}
+    </SELECT>
+    <input style="height: 20px;" type="button" width="5%" value=" Hitung " onClick="tambah()">
+  </p> 
+</td>
+</tr>
+
+<tr>
+  <td></td> <td>:</td>
+  <td style="width: 15%;">
+    <input style="width:100%;" type="text" name="tampilhargaobat" id="tampilhargaobat" class="form-control" placeholder="Biaya Obat" readonly>
+  </td>
+  <td>+</td>
+  <td>
+      <input style="width: 20%;" type="text" name="biayaharimin" id="biayaharimin" class="form-control" placeholder="Biaya" readonly> s/d
+      <input style="width: 20%;" type="text" name="biayaharimaks" id="biayaharimaks" class="form-control" placeholder="Ruangan" readonly>
+     
+  </td>
+  
+</tr>
+
+<tr style="height: 50px;">
+  <td></td>
+  <td>:</td>
+  <td colspan="3"> 
+    <input style="width: 25%;" type="text" name="total" id="total" class="form-control" placeholder="Total Biaya Min" readonly> s/d
+    <input style="width: 25%;" type="text" name="total2" id="total2" class="form-control" placeholder="Total Biaya Max" readonly>
+   
+</td>
+</tr>
+
+</table>
+ 
+ 
+  <div class="rincianruangan" hidden>
+   <h4>Rincian Estimasi Biaya</h4>
+   <table>
+     <thead>
+       <tr>
+         <th>No</th>
+         <th>Ruangan</th>
+         <th>Harga/Malam</th>
+       </tr>
+     </thead>
+     <tbody>
+       {% for rs in data %}
+       <tr>
+         <td>{{ loop.index }}</td>
+         <td>{{ rs.1 }}</td>
+         <td>{{ rs.2 }}</td>
+       </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+  </div>
+
+   <div class="rincianobat" hidden>  
+    <h4>Rincian Biaya Obat</h4>
+   <table>
+     <thead>
+       <tr>
+         <th>No</th>
+         <th>Nama Obat</th>
+         <th>Harga</th>
+         <th>Diagnosis</th>
+       </tr>
+     </thead>
+     <tbody>
+       {% for ob in daftarobat %}
+       <tr>
+         <td>{{ loop.index }}</td>
+         <td>{{ ob.1 }}</td>
+         <td>{{ ob.2 }}</td>
+         <td>{{ ob.4 }}</td>
+       </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+  </div>
+
+
+    <!-- {{ angka }} -->
+    <input name="jlhHari" id="jlhHari"  type="hidden" value="{{ angkamin }}">
+    <input name="jlhHari2" id="jlhHari2"  type="hidden" value="{{ angkamaks }}">
+  </form>
+
+  </div>
+  </div>
+
+ 
+  
+ 
+</div>
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+    // $(document).ready(function() {
+    //     $("#jlhHari, #jlhHari2, #hargaKelas").keyup(function() {
+    //         var kelasmin  = $("#jlhHari").val();
+    //         var kelasmaks  = $("#jlhHari2").val();
+    //         var harga = $("#hargaKelas").val();
+
+    //         var totalmin = parseInt(kelasmin) * parseInt(harga);
+    //         var totalmaks = parseInt(kelasmaks) * parseInt(harga);
+    //         $("#total").val(totalmin);
+    //         $("#total2").val(totalmaks);
+    //     });
+    // });
+    function tambah()
+        {
+            kelasmin=eval(biaya.jlhHari.value);
+            kelasmaks=eval(biaya.jlhHari2.value);
+            harga=eval(biaya.hargaKelas.value);
+            hargaobat = eval(biaya.hargaobat.value);
+
+            harimin = (kelasmin * harga);
+            harimaks = (kelasmaks * harga);
+
+            totalmin = (kelasmin * harga) + hargaobat;
+            totalmaks = (kelasmaks * harga) + hargaobat;
+
+
+            biaya.biayaharimin.value = harimin;
+            biaya.biayaharimaks.value = harimaks;
+            biaya.tampilhargaobat.value = hargaobat;
+            biaya.total.value = totalmin;
+            biaya.total2.value = totalmaks;
+        }
+</script>
+
+</body>
+</html>
